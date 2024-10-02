@@ -32,4 +32,7 @@ function params = getModelParameters()
     % Lengths
     params.Lg = 0.55 * 0.328; % m, Distance between elbow and mass center of upper arm
     params.L = 0.328;         % m, Length of upper arm
+
+    % Operational angel
+    params.theta3_hat = pi/2;      % rad, To be defined
 end
