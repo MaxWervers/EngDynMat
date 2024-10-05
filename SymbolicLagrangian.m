@@ -27,8 +27,8 @@ V_total = (1/2)*k1*(x0 - x1)^2 + ...
           (1/2)*k4*(x3 + L*cos(theta3))^2 + ...
           (1/2)*k5*(y3 + L*sin(theta3))^2;
           
-% Define the total dissapative expression R_total
-R_total = (1/2)*c1*(x0_dot - x1_dot)^2 + ...
+% Define the total dissipation expression D_total
+D_total = (1/2)*c1*(x0_dot - x1_dot)^2 + ...
           (1/2)*c2*(x1_dot - x2_dot)^2 + ...
           (1/2)*c3*(x2_dot - x3_dot)^2 + ...
           (1/2)*ct3*(theta3_dot)^2 + ...
@@ -36,11 +36,11 @@ R_total = (1/2)*c1*(x0_dot - x1_dot)^2 + ...
           (1/2)*c5*(x3_dot + L*theta3_dot*sin(theta3))^2
 
 % Langrangian eqations:
-L_x1 = diff(T_total, x1_dot, t) - diff(T_total, x1) + diff(V_total, x1);
-L_x2 = diff(T_total, x2_dot, t) - diff(T_total, x2) + diff(V_total, x2);
-L_x3 = diff(T_total, x3_dot, t) - diff(T_total, x3) + diff(V_total, x3);
-L_y3 = diff(T_total, y3_dot, t) - diff(T_total, y3) + diff(V_total, y3);
-L_theta3 = diff(T_total, theta3_dot, t) - diff(T_total, theta3) + diff(V_total, theta3);
+L_x1 = diff(T_total, x1_dot, t) - diff(T_total, x1) + diff(V_total, x1) + diff(D_total, x1);
+L_x2 = diff(T_total, x2_dot, t) - diff(T_total, x2) + diff(V_total, x2) + diff(D_total, x2);
+L_x3 = diff(T_total, x3_dot, t) - diff(T_total, x3) + diff(V_total, x3) + diff(D_total, x3);
+L_y3 = diff(T_total, y3_dot, t) - diff(T_total, y3) + diff(V_total, y3) + diff(D_total, y3);
+L_theta3 = diff(T_total, theta3_dot, t) - diff(T_total, theta3) + diff(V_total, theta3) + diff(D_total, theta3);
 
 % Display the Lagrangian equations
 disp('The Lagrangian equation for x1 is:');
