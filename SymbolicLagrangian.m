@@ -58,5 +58,11 @@ disp(L_y3);
 disp('The Lagrangian equation for theta3 is:');
 disp(L_theta3);
 
+q_vec = [x1 ,x2, x3, y3, theta3];
+q_dot_vec = [x1_dot, x2_dot, x3_dot, y3_dot, theta3_dot];
 
-M = [diff(T_total, x1_dot, x1_dot), diff(T_total, x2_dot, x2_dot), diff(T_total, x3_dot, x3_dot), diff(T_total, y3_dot, y3_dot), diff(T_total, theta3_dot, theta3_dot)]
+M = hessian(T_total, q_dot_vec)
+C = hessian(D_total, q_dot_vec)
+K = hessian(V_total, q_vec)
+
+
