@@ -79,4 +79,6 @@ C_at_theta3 = subs(C, theta3, pi/2)
 
 K_at_theta3 = subs(subs(K,theta3, pi/2), y3, 0)
 
+Q = mtimes(C_at_theta3, transpose([x0_dot ,0 ,0 ,0 ,0])) + mtimes(K_at_theta3, transpose([x0 ,0 ,0 ,0 ,0])) 
+
 
