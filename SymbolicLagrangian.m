@@ -2,7 +2,7 @@ clear;
 clc;
 syms m1 m2 m3 L Lg J3g x0(t) x1(t) x2(t) x3(t) y3(t) theta3(t) theta3_hat t k1 k2 k3 k4 k5 kt3 c1 c2 c3 ct3 c4 c5
 
-%%%%%% Im not certain how we should define x0_dot %%%%%%
+
 % Define symbolic derivatives with respect to time t
 x0_dot = diff(x0, t);            % x0_dot = dx0/dt
 x1_dot = diff(x1, t);            % x1_dot = dx1/dt
@@ -18,15 +18,7 @@ T_total = (1/2)*m1*x1_dot^2 + ...
           (1/2)*m3*(x3_dot - Lg*theta3_dot*sin(theta3))^2 + ...
           (1/2)*m3*(y3_dot + Lg*theta3_dot*cos(theta3))^2 + ...
           (1/2)*(J3g)*theta3_dot^2;
-
-          % (1/2)*m3*((Lg/L)*x3_dot + (L - Lg)/L * (x3_dot - L*theta3_dot*sin(theta3)))^2 + ...
-          % (1/2)*m3*((Lg/L)*y3_dot + (L - Lg)/L * (theta3_dot + L*theta3_dot*cos(theta3)))^2 + ...
-
-          % (1/2)*m3*x3_dot^2 + ...
-          % (1/2)*m3*y3_dot^2 + ...
-
          
-
 % Define the total potential energy expression V_total
 V_total = (1/2)*k1*(x0 - x1)^2 + ...
           (1/2)*k2*(x1 - x2)^2 + ...
@@ -43,14 +35,14 @@ D_total = (1/2)*c1*(x0_dot - x1_dot)^2 + ...
           (1/2)*c4*(x3_dot - L*theta3_dot*sin(theta3))^2 + ...
           (1/2)*c5*(y3_dot + L*theta3_dot*cos(theta3))^2;
 
-% Langrangian eqations:
+% Langrangian eqations of motion:
 L_x1 = diff(T_total, x1_dot, t) - diff(T_total, x1) + diff(V_total, x1) + diff(D_total, x1_dot);
 L_x2 = diff(T_total, x2_dot, t) - diff(T_total, x2) + diff(V_total, x2) + diff(D_total, x2_dot);
 L_x3 = diff(T_total, x3_dot, t) - diff(T_total, x3) + diff(V_total, x3) + diff(D_total, x3_dot);
 L_y3 = diff(T_total, y3_dot, t) - diff(T_total, y3) + diff(V_total, y3) + diff(D_total, y3_dot);
 L_theta3 = diff(T_total, theta3_dot, t) - diff(T_total, theta3) + diff(V_total, theta3) + diff(D_total, theta3_dot);
 
-% Display the Lagrangian equations
+% Display the Lagrangian equations of motion
 disp('The Lagrangian equation for x1 is:');
 disp(L_x1);
 
@@ -66,19 +58,23 @@ disp(L_y3);
 disp('The Lagrangian equation for theta3 is:');
 disp(L_theta3);
 
+% Define the generalized coordinates and their derivatives
 q_vec = [x1 ,x2, x3, y3, theta3];
 q_dot_vec = [x1_dot, x2_dot, x3_dot, y3_dot, theta3_dot];
 
+% Define the mass matrix M, the Damping matrix C, and the stiffness matrix K
 M = hessian(T_total, q_dot_vec)
 C = hessian(D_total, q_dot_vec)
 K = hessian(V_total, q_vec)
 
+% Define the mass matrix M, the Damping matrix C, and the stiffness matrix K at q_eq = [0, 0, 0, 0, pi/2]
 M_at_theta3 = subs(M, theta3, pi/2)
 
 C_at_theta3 = subs(C, theta3, pi/2)
 
 K_at_theta3 = subs(subs(K,theta3, pi/2), y3, 0)
 
+% Define the generalized forces Q
 Q = mtimes(C_at_theta3, transpose([x0_dot ,0 ,0 ,0 ,0])) + mtimes(K_at_theta3, transpose([x0 ,0 ,0 ,0 ,0])) 
 
 
