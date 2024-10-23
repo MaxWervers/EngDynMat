@@ -95,16 +95,34 @@ k4_num = params.k4;
 k5_num = params.k5;
 L_num = params.L;
 
+c1_num = params.c1;
+c2_num = params.c2;
+c3_num = params.c3;
+ct3_num = params.ct3;
+c4_num = params.c4;
+c5_num = params.c5;
+
+
+
+
+
 % Substitute all variables into K, C and M matrices
 M_substituted = subs(M_at_theta3, {m1, m2, m3, Lg, J3g}, {m1_num, m2_num, m3_num, Lg_num, J3g_num})
 
 K_substituted = subs(K_at_theta3, {k1, k2, k3, kt3, k4, k5, L}, {k1_num, k2_num, k3_num, kt3_num, k4_num, k5_num, L_num})
 
+C_substituted = subs(C_at_theta3, {c1, c2, c3, ct3, c4, c5, L}, {c1_num, c2_num, c3_num, ct3_num, c4_num, c5_num, L_num})
+
 % Conversion to numeric
 M_num = double(M_substituted)
 K_num = double(K_substituted)
+C_num = double(C_substituted)
 
-%Find eigenfrequencies & eigenmodes
+%Find eigenfrequencies & eigenmodes of undamped system
 [eigenmodes_undamped, omega_squared] = eig(K_num, M_num)
 
 eigen_freq_undamped = sqrt(omega_squared)
+
+%Find eigenfrequencies & eigenmodes of damped system
+[eigenmodes_damped, eigen_freq_damped] = polyeig(K_num,C_num,M_num)
+
