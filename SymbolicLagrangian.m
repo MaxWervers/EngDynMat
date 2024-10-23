@@ -24,8 +24,8 @@ V_total = (1/2)*k1*(x0 - x1)^2 + ...
           (1/2)*k2*(x1 - x2)^2 + ...
           (1/2)*k3*(x2 - x3)^2 + ...
           (1/2)*kt3*(theta3 - theta3_hat)^2 + ...
-          (1/2)*k4*(x3 + L*cos(theta3))^2 + ...
-          (1/2)*k5*(y3 + L*sin(theta3))^2;
+          (1/2)*k4*(x3 + L*cos(theta3) - (L*cos(theta3_hat)))^2 + ...
+          (1/2)*k5*(y3 + L*sin(theta3) - (L*sin(theta3_hat)))^2;
           
 % Define the total dissipation expression D_total
 D_total = (1/2)*c1*(x0_dot - x1_dot)^2 + ...
@@ -72,9 +72,37 @@ M_at_theta3 = subs(M, theta3, pi/2)
 
 C_at_theta3 = subs(C, theta3, pi/2)
 
-K_at_theta3 = subs(subs(K,theta3, pi/2), y3, 0)
+K_at_theta3 = subs(subs(subs(K, theta3, pi/2), y3, 0), theta3_hat, pi/2)
 
 % Define the generalized forces Q
 Q = mtimes(C_at_theta3, transpose([x0_dot ,0 ,0 ,0 ,0])) + mtimes(K_at_theta3, transpose([x0 ,0 ,0 ,0 ,0])) 
 
+% Call the function to get the model parameters
+params = getModelParameters();
 
+% Access the necessary values
+m1_num = params.m1;
+m2_num = params.m2;
+m3_num = params.m3;
+Lg_num = params.Lg;
+J3g_num = params.J3g;
+
+k1_num = params.k1;
+k2_num = params.k2;
+k3_num = params.k3;
+kt3_num = params.kt3;
+k4_num = params.k4;
+k5_num = params.k5;
+L_num = params.L;
+
+% Substitute all variables into K, C and M matrices
+M_substituted = subs(M_at_theta3, {m1, m2, m3, Lg, J3g}, {m1_num, m2_num, m3_num, Lg_num, J3g_num})
+
+K_substituted = subs(K_at_theta3, {k1, k2, k3, kt3, k4, k5, L}, {k1_num, k2_num, k3_num, kt3_num, k4_num, k5_num, L_num})
+
+% Conversion to numeric
+M_num = double(M_substituted)
+K_num = double(K_substituted)
+
+%Find eigenvalues
+omega = sqrt(eig(K_num, M_num))
