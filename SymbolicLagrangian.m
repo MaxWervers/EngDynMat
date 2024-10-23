@@ -104,5 +104,7 @@ K_substituted = subs(K_at_theta3, {k1, k2, k3, kt3, k4, k5, L}, {k1_num, k2_num,
 M_num = double(M_substituted)
 K_num = double(K_substituted)
 
-%Find eigenvalues
-omega = sqrt(eig(K_num, M_num))
+%Find eigenfrequencies & eigenmodes
+[eigenmodes_undamped, omega_squared] = eig(K_num, M_num)
+
+eigen_freq_undamped = sqrt(omega_squared)
