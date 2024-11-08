@@ -128,7 +128,19 @@ eigen_freq_undamped = sqrt(omega_squared)
 
 eigen_freq_damped = sqrt(eigen_freq_damped)
 
-%
+%find modal mass matrix
+mu = diag(transpose(eigenmodes_damped) * M_num * eigenmodes_damped)
+
+%find modal damping matrix
+beta = diag(transpose(eigenmodes_damped) * C_num * eigenmodes_damped)
+
+%find modal stiffness matrix
+gamma = diag(transpose(eigenmodes_damped) * K_num * eigenmodes_damped)
+
+%find damping ratios
+epsilon = beta ./ (2.*eigen_freq_damped.*mu)
+
+% initialize for animation
 X = eigenmodes_undamped;
 Xd = eigenmodes_damped;
 
@@ -137,8 +149,8 @@ lambda_v = eigen_freq_damped
 
 
 % Generate motion 
-damping_type = 2; % 1 for Undamped, 2 for damped.
-chosen_mode = 10; % Selected eigen mode
+damping_type = 1; % 1 for Undamped, 2 for damped.
+chosen_mode = 1; % Selected eigen mode
 time_values = 0:0.01:1; % Time values
 
 % Introduce disturbance
