@@ -102,10 +102,6 @@ ct3_num = params.ct3;
 c4_num = params.c4;
 c5_num = params.c5;
 
-
-
-
-
 % Substitute all variables into K, C and M matrices
 M_substituted = subs(M_at_theta3, {m1, m2, m3, Lg, J3g}, {m1_num, m2_num, m3_num, Lg_num, J3g_num})
 
@@ -138,7 +134,8 @@ beta = diag(transpose(eigenmodes_damped) * C_num * eigenmodes_damped)
 gamma = diag(transpose(eigenmodes_damped) * K_num * eigenmodes_damped)
 
 %find damping ratios
-epsilon = beta ./ (2.*eigen_freq_damped.*mu)
+%epsilon = beta ./ (2.*diag(eigen_freq_undamped).*mu)
+epsilon = -real(eigen_freq_damped)./(2.*imag(eigen_freq_damped))
 
 % initialize for animation
 X = eigenmodes_undamped;
@@ -150,7 +147,7 @@ lambda_v = eigen_freq_damped
 
 % Generate motion 
 damping_type = 1; % 1 for Undamped, 2 for damped.
-chosen_mode = 1; % Selected eigen mode
+chosen_mode = 4; % Selected eigen mode
 time_values = 0:0.01:1; % Time values
 
 % Introduce disturbance
