@@ -126,3 +126,88 @@ eigen_freq_undamped = sqrt(omega_squared)
 %Find eigenfrequencies & eigenmodes of damped system
 [eigenmodes_damped, eigen_freq_damped] = polyeig(K_num,C_num,M_num)
 
+eigen_freq_damped = sqrt(eigen_freq_damped)
+
+%
+X = eigenmodes_undamped;
+Xd = eigenmodes_damped;
+
+omega2_v = diag(eigen_freq_undamped)
+lambda_v = eigen_freq_damped
+
+
+% Generate motion 
+damping_type = 2; % 1 for Undamped, 2 for damped.
+chosen_mode = 10; % Selected eigen mode
+time_values = 0:0.01:1; % Time values
+
+% Introduce disturbance
+initial = [0, 10, 25, 0, 0]; 
+
+% Damping yes/no
+if damping_type == 1
+    damping_type_str = "Undamped";
+    eigenvector = real(X(:, chosen_mode));
+    disturb = 0.5 * sin(abs(real(omega2_v(chosen_mode))) * time_values);
+    title_text = "Mode " + chosen_mode + " without damping for \omega = " ...
+        + double(omega2_v(chosen_mode)) + " rad/s";
+else
+    damping_type_str = "Damped";
+    eigenvector = real(Xd(:, chosen_mode));
+    disturb = 0.5 * sin(abs(real(lambda_v(chosen_mode))) * time_values);
+    title_text = "Mode " + chosen_mode + " with damping for \omega = " ...
+        + double(lambda_v(chosen_mode)) + " rad/s";
+end
+
+% Integrate the disturbed system
+x1 = eigenvector(1) * disturb + initial(1);
+x2 = eigenvector(2) * disturb + initial(2);
+x3 = eigenvector(3) * disturb + initial(3);
+y3 = eigenvector(4) * disturb + initial(4);
+x4 = x3 + disturb .* (L_num * cos(eigenvector(5))) + initial(5);
+y4 = y3 + disturb .* (L_num * sin(eigenvector(5))) + L_num * 100;
+
+% Draw initial figure
+mass1 = plot([x1(1) x2(1)], [0 0], 'o', 'MarkerSize', 5);
+hold on
+mass2 = plot([x3(1) x4(1)], [y3(1) y4(1)], 'o', 'MarkerSize', 5); 
+hold on
+xlim([-20, 50]);
+ylim([-20, 50]);
+xlabel('X(mm)') 
+ylabel('Y(mm)')
+title(title_text)
+
+% Animation loop
+mode_number_str = ".Mode" + chosen_mode; % Adjust label
+filename_prefix = "EDassignment10"; % Adjust prefix
+filename = join(["Simulations/", filename_prefix, damping_type_str, mode_number_str]);
+animation_video = VideoWriter(filename, 'MPEG-4');
+animation_video.FrameRate = 10;
+open(animation_video)
+
+for frame_index = 1:length(disturb)
+    % Update mass positions
+    set(mass1, 'XData', [x1(frame_index) x2(frame_index)], 'YData', [0 0]);
+    hold on
+    set(mass2, 'XData', [x3(frame_index) x4(frame_index)], 'YData', [y3(frame_index) y4(frame_index)]);
+    
+    % Draw lower
+    lower = line([x1(frame_index), x2(frame_index), x3(frame_index)], [0, 0, y3(frame_index)], ...
+                           'Color', [0.8 0.2 0.6], 'Linewidth', 1); 
+                           
+    % Draw upper
+    upper = line([x3(frame_index), x4(frame_index)], [y3(frame_index), y4(frame_index)], ...
+                          'Color', [0.2 0.6 0.8], 'Linewidth', 2.5);
+    
+    % Capture the frame
+    frame = getframe(gcf);
+    image_data = frame2im(frame);
+    writeVideo(animation_video, image_data);
+    
+    % Remove drawn elements to prepare for the next frame
+    delete(lower)
+    delete(upper)
+end
+
+close(animation_video)
